@@ -91,6 +91,15 @@ elif [ "${DNS_PROVIDER}" == "dns-gandi" ]; then
     fi
     PROVIDER_ARGUMENTS+=("--authenticator" "certbot-plugin-gandi:dns" "--certbot-plugin-gandi:dns-credentials" /data/dnsapikey)
 
+# Aliyun
+elif [ "${DNS_PROVIDER}" == "dns-aliyun" ]; then
+    if bashio::config.exists 'dns.aliyun_access_key'; then
+        bashio::log.info "Use aliyun access key"
+        echo "certbot_dns_aliyun:dns_aliyun_access_key = $(bashio::config 'dns.aliyun_access_key')" >> /data/dnsapikey
+        echo "certbot_dns_aliyun:dns_aliyun_access_key_secret = $(bashio::config 'aliyun_access_key_secret')" >> /data/dnsapikey
+    fi
+    PROVIDER_ARGUMENTS+=("--authenticator" "certbot_dns_aliyun:dns-aliyun" "--certbot_dns_aliyun:dns-aliyun-credentials" /data/dnsapikey)
+
 # Njalla
 elif [ "${CHALLENGE}" == "dns" ] && [ "${DNS_PROVIDER}" == "dns-njalla" ]; then
     bashio::config.require 'dns.njalla_token'
